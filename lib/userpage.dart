@@ -45,12 +45,11 @@ class _userinfoState extends State<userinfo> {
             FadeAnimation(
               1.6,
               Container(
-                margin: EdgeInsets.only(top: 100, left: 138),
-                child: CircleAvatar(
+                  margin: EdgeInsets.only(top: 100, left: 138),
+                  child: CircleAvatar(
                     radius: 60,
-                    backgroundImage: NetworkImage(
-                        'https://th.bing.com/th/id/OIP.behN54W1j_BEWTTR4fCqRgHaHa?w=196&h=196&c=7&o=5&dpr=1.25&pid=1.7')),
-              ),
+                    backgroundImage: AssetImage("images/rhel.jfif"),
+                  )),
             ),
             Container(
               margin: EdgeInsets.only(top: 280),

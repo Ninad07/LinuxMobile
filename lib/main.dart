@@ -25,7 +25,7 @@ class App extends StatelessWidget {
         home: AnimatedSplashScreen(
             function: () async {},
             splashIconSize: double.infinity,
-            duration: 3000,
+            duration: 5000,
             splash: Splash(),
             nextScreen: Auth(),
             //splashTransition: null,

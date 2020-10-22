@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:DockerApp/Animation/animation.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'Server.dart';
 import 'terminal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,8 +23,20 @@ class Authvar {
   static var userlast;
 }
 
+AppToast(String state) {
+  Fluttertoast.showToast(
+      msg: state,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.grey.shade100,
+      textColor: Colors.black,
+      fontSize: 16.0);
+}
+
 class _AuthState extends State<Auth> {
   var islogged = false;
+  var islogged2 = false;
   var authc = FirebaseAuth.instance;
   FirebaseFirestore fsconnect = FirebaseFirestore.instance;
   bool error = false;
@@ -259,52 +271,72 @@ class _AuthState extends State<Auth> {
                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
-                                stops: [.3, .55],
-                                colors: [Colors.blue, Colors.blue.shade900]),
+                                stops: [
+                                  .3,
+                                  .55
+                                ],
+                                colors: [
+                                  Colors.blue.shade600,
+                                  Colors.blue.shade900
+                                ]),
                           ),
                           height: 40,
                           width: 350,
                           //color: Colors.white,
                           child: Center(child: Text("Login"))),
                   onPressed: () async {
-                    var result2;
-                    setState(() {
-                      islogged = true;
-                    });
-                    try {
-                      result2 = await authc.signInWithEmailAndPassword(
-                          email: mail, password: pass);
-                      print(authc.currentUser.uid);
-                      var retrived = await fsconnect
-                          .collection("user")
-                          .doc(authc.currentUser.uid)
-                          .get();
-                      print(retrived.data());
-                      var temp = retrived.data();
+                    if (pass != null && mail != null) {
+                      var result2;
+                      setState(() {
+                        islogged = true;
+                      });
+                      try {
+                        result2 = await authc.signInWithEmailAndPassword(
+                            email: mail, password: pass);
+                        print(authc.currentUser.uid);
+                        var retrived = await fsconnect
+                            .collection("user")
+                            .doc(authc.currentUser.uid)
+                            .get();
+                        print(retrived.data());
+                        var temp = retrived.data();
 
-                      Authvar.usermob1 = temp['mob'];
-                      Authvar.usermail1 = temp['mail'];
-                      Authvar.username1 = temp['Name'];
-                      Authvar.userlast =
-                          authc.currentUser.metadata.lastSignInTime;
-                      //print(retrived);
-                    } catch (e) {
-                      print(e);
-                      setState(
-                        () {
-                          error1 = true;
-                        },
-                      );
-                    }
-                    print(result2);
-                    if (result2 != null) {
-                      islogged = false;
-                      //AppToast("Logged in");
-                      print('logged in');
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return Server();
-                      }));
+                        Authvar.usermob1 = temp['mob'];
+                        Authvar.usermail1 = temp['mail'];
+                        Authvar.username1 = temp['Name'];
+                        Authvar.userlast =
+                            authc.currentUser.metadata.lastSignInTime;
+                        setState(
+                          () {
+                            islogged = false;
+                          },
+                        );
+                        //print(retrived);
+                      } catch (e) {
+                        print(e);
+                        setState(
+                          () {
+                            error1 = true;
+                            islogged = false;
+                          },
+                        );
+                      }
+                      print(result2);
+                      if (result2 != null) {
+                        setState(
+                          () {
+                            islogged = false;
+                          },
+                        );
+                        //AppToast("Logged in");
+                        print('logged in');
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return Server();
+                        }));
+                      }
+                    } else {
+                      AppToast("No Credentials found");
                     }
                   },
                 ),
@@ -641,8 +673,8 @@ class _AuthState extends State<Auth> {
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(10))),
                                           isExtended: true,
-                                          backgroundColor: Colors.black,
-                                          child: islogged
+                                          backgroundColor: Colors.blue.shade700,
+                                          child: islogged2
                                               ? Transform.scale(
                                                   scale: 0.6,
                                                   child:
@@ -674,11 +706,12 @@ class _AuthState extends State<Auth> {
                                                   child: Center(
                                                       child: Text("Sign Up"))),
                                           onPressed: () async {
+                                            setState(() {
+                                              islogged2 = true;
+                                            });
                                             print(pass);
                                             var result;
-                                            setState(() {
-                                              islogged = true;
-                                            });
+
                                             try {
                                               result = await authc
                                                   .createUserWithEmailAndPassword(
@@ -701,21 +734,18 @@ class _AuthState extends State<Auth> {
                                                   "mail": mail,
                                                 },
                                               );
+                                              setState(() {
+                                                islogged2 = false;
+                                              });
                                             } catch (e) {
                                               print(e);
                                               setState(() {
                                                 error = true;
                                               });
                                             }
-                                            print(result);
-                                            if (result != null) {
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) {
-                                                return Terminal();
-                                              }));
-                                              islogged = false;
-                                            }
+
+                                            print("RESULT = $result");
+                                            Navigator.pop(context);
                                           },
                                         ),
                                       ),

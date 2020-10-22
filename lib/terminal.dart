@@ -136,9 +136,15 @@ class _TerminalState extends State<Terminal> {
                                 child: FloatingActionButton(
                                     backgroundColor: Colors.blue,
                                     onPressed: () async {
-                                      await APICommand(cmd);
-                                      await fs1.collection('history').add(
-                                          {"command": cmd, "output": output});
+                                      if (cmd != "clear") {
+                                        await APICommand(cmd);
+                                        await fs1.collection('history').add(
+                                            {"command": cmd, "output": output});
+                                      } else {
+                                        setState(() {
+                                          displayOutput = "";
+                                        });
+                                      }
                                     },
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(0),
